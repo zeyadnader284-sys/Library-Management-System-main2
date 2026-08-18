@@ -1,0 +1,119 @@
+from library import (
+    Book,
+    BookNotAvailableError,
+    BookNotFoundError,
+    DuplicateEntryError,
+    Library,
+    Member,
+    MemberNotFoundError,
+    load_library,
+    save_library,
+)
+
+DATA_FILE = "library.json"
+
+
+def print_menu():
+    print(
+        """
+1. Add book
+2. Remove book
+3. Add member
+4. Remove member
+5. Search books
+6. List all books
+7. Available books
+8. Borrow book
+9. Return book
+10. List borrowed books
+11. Save library
+12. Exit
+"""
+    )
+
+
+def main():
+    library = Library()
+    load_library(library, DATA_FILE)
+
+    while True:
+        print_menu()
+        choice = input("Choose an option: ").strip()
+
+        try:
+            if choice == "1":
+                title = input("Title: ").strip()
+                author = input("Author: ").strip()
+                isbn = input("ISBN: ").strip()
+                if not title or not author or not isbn:
+                    print("All fields are required.")
+                    continue
+                library.add_book(Book(title, author, isbn))
+
+            elif choice == "2":
+                isbn = input("ISBN to remove: ").strip()
+                library.remove_book(isbn)
+
+            elif choice == "3":
+                name = input("Member name: ").strip()
+                member_id = input("Member ID: ").strip()
+                library.add_member(Member(name, member_id))
+
+            elif choice == "4":
+                member_id = input("Member ID: ").strip()
+                library.remove_member(member_id)
+
+            elif choice == "5":
+                keyword = input("Search keyword: ").strip()
+                results = library.search_books(keyword)
+                for book in results:
+                    print("-", book)
+
+            elif choice == "6":
+                for book in library.list_books():
+                    print("-", book)
+
+            elif choice == "7":
+                for book in library.available_books():
+                    print("-", book)
+
+            elif choice == "8":
+                member_id = input("Member ID: ").strip()
+                isbn = input("ISBN: ").strip()
+                library.borrow_book(member_id, isbn)
+
+            elif choice == "9":
+                member_id = input("Member ID: ").strip()
+                isbn = input("ISBN: ").strip()
+                library.return_book(member_id, isbn)
+
+            elif choice == "10":
+                member_id = input("Member ID: ").strip()
+                books = library.list_borrowed_books(member_id)
+                for book in books:
+                    print("-", book)
+
+            elif choice == "11":
+                save_library(library, DATA_FILE)
+                print("Library saved.")
+
+            elif choice == "12":
+                save_library(library, DATA_FILE)
+                print("Goodbye!")
+                break
+
+            else:
+                print("Invalid option.")
+
+        except (
+                BookNotFoundError,
+                MemberNotFoundError,
+                BookNotAvailableError,
+                DuplicateEntryError,
+                ValueError,
+        ) as error:
+            print("Error:", error)
+
+
+if __name__ == "__main__":
+    main()
