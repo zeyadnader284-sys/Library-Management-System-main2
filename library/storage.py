@@ -11,6 +11,7 @@ def save_library(library, path):
                 "author": book.author,
                 "isbn": book.isbn,
                 "is_borrowed": book.is_borrowed,
+                "borrow_count": book.borrow_count,
             }
             for book in library.books
         ],
@@ -43,6 +44,7 @@ def load_library(library, path):
             record["isbn"],
         )
         book.is_borrowed = record.get("is_borrowed", False)
+        book.borrow_count = record.get("borrow_count", 0)
         library.books.append(book)
 
     library.members = []
